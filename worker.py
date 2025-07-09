@@ -48,9 +48,18 @@ def process_prompt(prompt):
     global chat_history
 
     if conversation_chain is None:
-        return "Please upload a PDF document first."
+        # Use the LLM directly for general chat
+        try:
+            result = llm.invoke(prompt)
+        except Exception as e:
+            result = f"Error generating response: {e}"
+        chat_history.append((prompt, result))
+        return result
 
-    result = conversation_chain.run(prompt)
+    try:
+        result = conversation_chain.run(prompt)
+    except Exception as e:
+        result = f"Error answering with document: {e}"
     chat_history.append((prompt, result))
     return result
 
